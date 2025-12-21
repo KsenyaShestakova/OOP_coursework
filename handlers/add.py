@@ -1,5 +1,4 @@
-from aiogram.fsm.state import StatesGroup
-
+import re
 from phrases import ADD_TEXT
 from aiogram import F
 from aiogram.filters import Command
@@ -160,14 +159,14 @@ async def process_category(callback, state):
         success_text = (
             f"""*Подписка успешно добавлена!*
 
-            *Название:* {subscription.name}
-            *Стоимость:* {subscription.price:.2f} {subscription.currency}
-            *День платежа:* {subscription.payment_day}-е число
-            *Периодичность:* {data['billing_period']}
-            *Категория:* {category_name}
-            *Следующий платеж:* {subscription.next_payment_date.strftime('%d.%m.%Y')}
+*Название:* {subscription.name}
+*Стоимость:* {subscription.price:.2f} {subscription.currency}
+*День платежа:* {subscription.payment_day}-е число
+*Периодичность:* {data['billing_period']}
+*Категория:* {category_name}
+*Следующий платеж:* {subscription.next_payment_date.strftime('%d.%m.%Y')}
 
-            "Подписка будет отображаться в списке ваших подписок."""
+Подписка будет отображаться в списке ваших подписок."""
         )
 
         await callback.message.edit_text(
@@ -184,3 +183,48 @@ async def process_category(callback, state):
                                       reply_markup=get_main_keyboard())
         await state.clear()
     db.close()
+
+
+# Обработчик команды /subscription с параметрами
+@router.message(Command("subscription"))
+async def cmd_subscription_full(message):
+    """Обработчик команды /subscription с параметрами"""
+    text = message.text.strip()
+    pattern = r'^/subscription\s+добавить\s+"([^"]+)"\s+(\d+(?:\.\d+)?)\s+(\d+)$'
+    match = re.match(pattern, text)
+
+    if not match:
+        await message.answer(
+            "Неправильный формат команды.\n\n"
+            "Правильный формат:\n"
+            '`/subscription добавить "Название" цена день`\n\n'
+            "Пример:\n"
+            '`/subscription добавить "Яндекс.Плюс" 399 25`',
+            parse_mode="Markdown"
+        )
+        return
+
+    name = match.group(1)
+    price = float(match.group(2))
+    day = int(match.group(3))
+
+    if day < 1 or day > 31:
+        await message.answer("День должен быть от 1 до 31.")
+        return
+
+    db = next(get_db())
+
+    try:
+        subscription = SubscriptionService.add_subscription(db, message.from_user.id,
+                                                            name, price, day)
+
+        await message.answer(
+            f"""Подписка *{name}* успешно добавлена!\n\n
+Цена: {price:.2f} RUB\n
+День оплаты: {day}-е число\n
+Следующий платеж: {subscription.next_payment_date.strftime('%d.%m.%Y')}""",
+            parse_mode="Markdown"
+        )
+
+    except Exception as e:
+        await message.answer(f"Ошибка при добавлении подписки: {str(e)}")
