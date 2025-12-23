@@ -115,8 +115,7 @@ class SubscriptionService:
                 setattr(subscription, key, value)
 
         if 'payment_day' in kwargs:
-            subscription.next_payment_date = SubscriptionService._calculate_next_payment_date(
-                subscription.payment_day)
+            subscription.next_payment_date = SubscriptionService._calculate_next_payment_date(subscription.payment_day)
 
         session.commit()
         session.refresh(subscription)

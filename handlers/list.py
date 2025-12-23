@@ -24,6 +24,11 @@ async def cmd_list(message):
     active_subs = [sub for sub in subscriptions if sub.is_active]
     inactive_subs = [sub for sub in subscriptions if not sub.is_active]
     response = ""
+    period = {
+        "weekly": "еженедельно",
+        "monthly": "ежемесячно",
+        "yearly": "ежегодно"
+    }
     if active_subs:
         response += "*Активные подписки:*\n\n"
         total_monthly = 0
@@ -51,7 +56,7 @@ async def cmd_list(message):
 
             response += (
                 f"""{i}. *{sub.name}* (ID: `{sub.id}`)
-{sub.price:.2f} {sub.currency} ({sub.billing_period})
+{sub.price:.2f} {sub.currency} ({period[sub.billing_period]})
 Следующий платеж: {next_payment}
 Категория: {category_name}
 В месяц: {monthly_cost:.2f} рублей\n\n"""
@@ -73,9 +78,9 @@ async def cmd_list(message):
 
             response += (
                 f"""{i}. *{sub.name}* (ID: `{sub.id}`) [приостановлена]
-{sub.price:.2f} {sub.currency} ({sub.billing_period})
+{sub.price:.2f} {sub.currency} ({period[sub.billing_period]})
 Следующий платеж: {next_payment}
-Категория: {category_name}\n"""
+Категория: {category_name}\n\n"""
             )
     else:
         response += "*У вас нет неактивных подписок*\n\n"

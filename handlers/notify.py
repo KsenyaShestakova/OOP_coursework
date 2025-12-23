@@ -9,7 +9,7 @@ from database.models import User
 
 # Обработчик команды /notify
 @router.message(Command("notify"))
-@router.message(F.text == "Настройки")
+@router.message(F.text == "Настройки уведомлений")
 async def cmd_notify(message):
     """Обработчик команды /notify"""
     db = next(get_db())

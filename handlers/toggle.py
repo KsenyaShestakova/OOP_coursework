@@ -6,14 +6,14 @@ from services import SubscriptionService
 
 
 # Обработчик команды /toggle (Приостановка/возобновление подписки)
-@router.message(F.text == "Приостановка/возобновление")
+@router.message(F.text == "Приостановка/возобновление подписки")
 @router.message(Command("toggle"))
 async def cmd_toggle(message):
     """Приостановка/возобновление подписки"""
     try:
         parts = message.text.split()
-        if len(parts) < 2:
-            await message.answer("Использование: `/toggle` <ID_подписки>")
+        if len(parts) < 3:
+            await message.answer("Использование: /toggle <ID_подписки>")
             return
 
         subscription_id = int(parts[1])

@@ -9,9 +9,9 @@ def get_main_keyboard():
         "Мои подписки",
         "Добавить подписку",
         "Ближайшие платежи",
-        "Настройки",
+        "Настройки уведомлений",
         "Помощь",
-        "Приостановка/возобновление",
+        "Приостановка/возобновление подписки",
         "Редактировать",
         "Удалить"
     ]
@@ -43,7 +43,9 @@ def get_categories_keyboard(categories):
 # Клавиатура для выбора периода оплаты
 def get_billing_period_keyboard():
     """Клавиатура для выбора периода оплаты"""
-    periods = [("Ежемесячно", "monthly"), ("Ежегодно", "yearly"), ("Еженедельно", "weekly")]
+    periods = [("Ежемесячно", "monthly"),
+               ("Ежегодно", "yearly"),
+               ("Еженедельно", "weekly")]
 
     builder = InlineKeyboardBuilder()
     for text, period in periods:
@@ -52,23 +54,13 @@ def get_billing_period_keyboard():
     return builder.as_markup()
 
 
-# Клавиатура настроек
-def get_settings_keyboard():
-    """Клавиатура настроек"""
-    settings = [("Уведомления", "notifications"), ("Категории", "categories"),
-                ("Очистить данные", "clear_data")]
-
-    builder = InlineKeyboardBuilder()
-    for text, action in settings:
-        builder.add(InlineKeyboardButton(text=text, callback_data=f"settings_{action}"))
-    builder.adjust(1)
-    return builder.as_markup()
-
-
 # Клавиатура для выбора дней уведомления
 def get_notification_days_keyboard():
     """Клавиатура для выбора дней уведомления"""
-    days_options = [("Отключить", "0"), ("1 день", "1"), ("3 дня", "3"), ("7 дней", "7")]
+    days_options = [("Отключить", "0"),
+                    ("1 день", "1"),
+                    ("3 дня", "3"),
+                    ("7 дней", "7")]
 
     builder = InlineKeyboardBuilder()
     for text, days in days_options:
@@ -76,12 +68,3 @@ def get_notification_days_keyboard():
     builder.adjust(2)
     return builder.as_markup()
 
-
-# Клавиатура подтверждения
-def get_confirm_keyboard(action):
-    """Клавиатура подтверждения"""
-    builder = InlineKeyboardBuilder()
-    builder.add(InlineKeyboardButton(text="Да", callback_data=f"confirm_{action}"))
-    builder.add(InlineKeyboardButton(text="Нет", callback_data=f"cancel_{action}"))
-    builder.adjust(2)
-    return builder.as_markup()
