@@ -189,42 +189,11 @@ class SubscriptionService:
                 monthly_total += sub.price / 12
                 yearly_total += sub.price
             elif sub.billing_period == "weekly":
-                monthly_total += sub.price * 4.33  # ~4.33 недели в месяце
-                yearly_total += sub.price * 52.14  # ~52.14 недели в году
+                monthly_total += sub.price * 4.33
+                yearly_total += sub.price * 52
 
         return {"monthly": round(monthly_total, 2),
                 "yearly": round(yearly_total, 2)}
-
-    # Получить статистику по категориям
-    @staticmethod
-    def get_statistics_by_category(session, telegram_id):
-        """Получить статистику по категориям"""
-        user = session.query(User).filter(User.telegram_id == telegram_id).first()
-        if not user:
-            return []
-
-        monthly_cost = case([(Subscription.billing_period == "monthly", Subscription.price),
-                             (Subscription.billing_period == "yearly", Subscription.price / 12),
-                             (Subscription.billing_period == "weekly", Subscription.price * 4.33)],
-                            else_=Subscription.price)
-
-        result = session.query(Category.name, Category.emoji,
-                               func.count(Subscription.id).label('count'),
-                               func.sum(monthly_cost).label('total')).join(Subscription,
-                                                                           Subscription.category_id == Category.id).filter(
-            Subscription.user_id == user.id, Subscription.is_active == True).group_by(
-            Category.id, Category.name, Category.emoji).order_by(
-            func.sum(monthly_cost).desc()).all()
-
-        return [
-            {
-                "name": row.name,
-                "emoji": row.emoji or "",
-                "count": row.count,
-                "total": round(row.total, 2)
-            }
-            for row in result
-        ]
 
     # Установить количество дней для уведомлений
     @staticmethod
