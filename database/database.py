@@ -6,14 +6,14 @@ from database.models import Base, Category
 
 
 class Database:
-    def __init__(self):
-        self.database_url = config.DATABASE_URL
+    def __init__(self) -> None:
+        self.database_url: str = config.DATABASE_URL
         self.engine = create_engine(self.database_url, connect_args={"check_same_thread": False},
                                     echo=False, pool_pre_ping=True)
         self.SessionLocal = scoped_session(
             sessionmaker(autocommit=False, autoflush=False, bind=self.engine))
 
-    def init_db(self):
+    def init_db(self) -> None:
         """Инициализация базы данных - создание всех таблиц"""
         try:
             Base.metadata.create_all(bind=self.engine)
@@ -23,7 +23,7 @@ class Database:
             print(f"Ошибка при инициализации базы данных: {e}")
             raise
 
-    def _create_default_categories(self):
+    def _create_default_categories(self) -> None:
         """Создание категорий по умолчанию"""
         session = self.SessionLocal()
         try:

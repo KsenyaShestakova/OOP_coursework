@@ -15,12 +15,10 @@ class User(Base):
     first_name = Column(String(100))
     last_name = Column(String(100))
     notification_days = Column(Integer, default=3)
-    language = Column(String(10), default='ru')
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
 
     subscriptions = relationship("Subscription", back_populates="user", cascade="all, delete-orphan")
-    categories = relationship("UserCategory", back_populates="user")
 
 
 class Subscription(Base):
@@ -38,7 +36,6 @@ class Subscription(Base):
     notifications_enabled = Column(Boolean, default=True)
     created_at = Column(Date, default=date.today)
     next_payment_date = Column(Date, nullable=False)
-    description = Column(Text, nullable=True)
 
     user = relationship("User", back_populates="subscriptions")
     category = relationship("Category", back_populates="subscriptions")
@@ -54,17 +51,6 @@ class Category(Base):
     created_at = Column(DateTime, default=datetime.now)
 
     subscriptions = relationship("Subscription", back_populates="category")
-
-
-class UserCategory(Base):
-    __tablename__ = 'user_categories'
-
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    category_id = Column(Integer, ForeignKey('categories.id'), nullable=False)
-
-    user = relationship("User", back_populates="categories")
-    category = relationship("Category")
 
 
 class Notification(Base):

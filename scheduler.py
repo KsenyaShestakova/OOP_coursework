@@ -18,7 +18,7 @@ class NotificationScheduler:
     def start(self):
         """Запуск планировщика"""
         self.scheduler.add_job(self.send_daily_notifications,
-                               CronTrigger(hour=config.NOTIFICATION_HOUR, minute=22),
+                               CronTrigger(hour=config.NOTIFICATION_HOUR, minute=0),
                                id="daily_notifications")
 
         self.scheduler.add_job(self.update_payment_dates, CronTrigger(hour=0, minute=0),

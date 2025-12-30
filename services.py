@@ -1,8 +1,6 @@
 from datetime import date, timedelta
-from sqlalchemy import func
 import calendar
-from database.models import User, Subscription, Category, Notification
-from sqlalchemy import case
+from database.models import User, Subscription, Category
 
 
 class SubscriptionService:
@@ -294,14 +292,3 @@ class NotificationService:
             f"{category_text}\n\n"
             f"_Не забудьте оплатить вовремя!_"
         )
-
-    # Сохранить уведомление в базу данных
-    @staticmethod
-    def save_notification(session, user_id, subscription_id, message, scheduled_for):
-        """Сохранить уведомление в базу данных"""
-        notification = Notification(user_id=user_id, subscription_id=subscription_id,
-                                    message=message, scheduled_for=scheduled_for)
-        session.add(notification)
-        session.commit()
-        session.refresh(notification)
-        return notification
